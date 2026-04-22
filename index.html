@@ -1,56 +1,201 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Formação Tecnológica Docente</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f6f8;
-      padding: 50px;
-    }
-    .container {
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #2c3e50;
-    }
-    p {
-      color: #555;
-    }
-    a.button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 15px 25px;
-      background-color: #0073e6;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 18px;
-    }
-    a.button:hover {
-      background-color: #005bb5;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Autoavaliação DigComp</title>
+
+<style>
+body {
+  font-family: Arial;
+  max-width: 1000px;
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+}
+
+.area {
+  margin-top: 25px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.pergunta {
+  margin-bottom: 12px;
+}
+
+.opcoes label {
+  margin-right: 10px;
+}
+
+button {
+  padding: 12px;
+  width: 100%;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+#resultado {
+  margin-top: 30px;
+  font-weight: bold;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Formação Tecnológica na Prática Docente</h1>
-    <p>
-      Ambiente de formação voltado ao desenvolvimento de competências pedagógicas digitais no ensino de Ciências Naturais.
-    </p>
-    <p>
-      Clique abaixo para acessar o curso.
-    </p>
-    <a class="button" href="https://SEU-MOODLE.moodlecloud.com" target="_blank">
-      Acessar Curso
-    </a>
-  </div>
+
+<h2>Autoavaliação de Competência Digital (DigComp)</h2>
+
+<p><b>Escala de frequência:</b><br>
+1 = Nunca | 2 = Raramente | 3 = Às vezes | 4 = Frequentemente | 5 = Sempre
+</p>
+
+<form id="formulario"></form>
+
+<button onclick="calcular()">Calcular resultado</button>
+
+<div id="resultado"></div>
+
+<script>
+
+const areas = [
+  {
+    nome: "1. Informação",
+    perguntas: [
+      {texto: "Eu consigo fazer uma busca básica no Google ou outro buscador, quando necessito de uma informação (ex: trabalho ou estudo), .", peso: 1},
+      {texto: "Eu consigo elaborar uma busca clara (usando palavras-chave) para encontrar exatamente o que preciso, mudo as palavras a fim de melhorar o resultado.", peso: 2},
+      {texto: "Eu consigo verificar se uma informação da internet é confiavel ao analisar suas fontes.", peso: 1},
+      {texto: "Eu consigo atualizar meus contatos ou informações em aplicativos como telefone, e-mail ou redes sociais.", peso: 1},
+      {texto: "Eu Consigo organizar, guardar ou excluir arquivos tanto no dispositivo quanto em serviços como Google Drive, OneDrive, etc.", peso: 2}
+    ]
+  },
+  {
+    nome: "2. Comunicação",
+    perguntas: [
+      {texto: "Eu consigo usar aplicativos como WhatsApp, e-mail ou redes sociais para conversar ou compartilhar links com pessoas ou grupos (LO2.2.7) ", peso: 1},
+      {texto: "Eu consigo obter melhores respostas ao usar chatbots (como ChatGPT) ao elaborar perguntas.", peso: 2},
+      {texto: "Eu consigo usar a internet para encontrar grupos ou comunidades sobre temas que me interessam.", peso: 1},
+      {texto: "Eu consigo perceber vantagens e problemas de plataformas digitais (como apps e redes sociais).", peso: 2},
+      {texto: "Eu consigo escolher ferramentas (ex: Google Docs, WhatsApp, Teams) de acordo com o tipo de trabalho em grupo.", peso: 2},
+      {texto: "Eu consigo usar emojis e ajustar a forma de escrever dependendo da situação (formal ou informal).", peso: 1},
+      {texto: "Eu consigo alterar configurações de privacidade de aplicativos e contas online.", peso: 2}
+    ]
+  },
+  {
+    nome: "3. Criação de Conteúdo",
+    perguntas: [
+      {texto: "Eu consigo usar funções básicas de ferramentas digitais para criar e editar conteúdos (como texto, imagem, vídeo ou áudio).", peso: 1},
+      {texto: "Eu consigo usar ferramentas de IA de forma consciente e ética para ajudar na criação de conteúdos digitais.", peso: 2},
+      {texto: "Eu consigo modificar conteúdos digitais existentes usando funções básicas de edição e formatação e com acessibilidade.", peso: 1},
+      {texto: "Eu consigo compartilhar conteúdos digitais respeitando regras básicas legais e éticas.", peso: 1},
+      {texto: "Eu consigo criar fluxogramas ou diagramas para representar soluções passo a passo.", peso: 2}
+    ]
+  },
+  {
+    nome: "4. Segurança",
+    perguntas: [
+      {texto: "Eu consigo aplicar medidas básicas de segurança no meu dispositivo, como usar antivírus, senha forte e bloqueio de tela.", peso: 1},
+      {texto: "Eu consigo reconhecer sinais de possível roubo de identidade e tomar ações adequadas.", peso: 1},
+      {texto: "Eu consigo adotar estratégias para manter um uso saudável das tecnologias digitais.", peso: 1},
+      {texto: "Eu consigo me proteger de conteúdos prejudiciais ou inadequados na internet.", peso: 2},
+      {texto: "Eu consigo adotar práticas para reduzir o impacto ambiental do uso de tecnologias digitais.", peso: 2}
+    ]
+  },
+  {
+    nome: "5. Resolução de Problemas",
+    perguntas: [
+      {texto: "Eu consigo instalar e atualizar aplicativos ou programas quando necessário. (Windows, Android ou IOS)", peso: 1},
+      {texto: "Eu consigo identificar a causa de problemas técnicos e tentar diferentes formas de resolvê-los.", peso: 2},
+      {texto: "Eu consigo utilizar recursos de acessibilidade do dispositivo quando necessário.", peso: 1},
+      {texto: "Eu consigo usar ferramentas digitais (como assistentes ou sugestões automáticas) para ajudar em tarefas simples.", peso: 1},
+      {texto: "Eu consigo personalizar configurações do ambiente digital para atender às minhas necessidades ou de outras pessoas.", peso: 2}
+    ]
+  }
+];
+
+const form = document.getElementById("formulario");
+
+let contador = 0;
+
+areas.forEach(area => {
+
+  let divArea = document.createElement("div");
+  divArea.className = "area";
+
+  divArea.innerHTML = `<h3>${area.nome}</h3>`;
+
+  area.perguntas.forEach(p => {
+
+    let div = document.createElement("div");
+    div.className = "pergunta";
+
+    let html = `<label>${p.texto}</label><br><div class="opcoes">`;
+
+    for(let i=1;i<=5;i++){
+      html += `<label>
+        <input type="radio" name="q${contador}" value="${i}"> ${i}
+      </label>`;
+    }
+
+    html += "</div>";
+    div.innerHTML = html;
+
+    divArea.appendChild(div);
+    contador++;
+  });
+
+  form.appendChild(divArea);
+});
+
+function classificar(media){
+  if(media <= 2.4) return "Básico";
+  else if(media <= 3.4) return "Em desenvolvimento";
+  else return "Intermediário";
+}
+
+function calcular(){
+
+  let index = 0;
+  let mediasAreas = [];
+  let resultadoTexto = "<h3>Resultado por área</h3>";
+
+  areas.forEach(area => {
+
+    let soma = 0;
+    let pesos = 0;
+
+    area.perguntas.forEach(p => {
+
+      let r = document.querySelector(`input[name="q${index}"]:checked`);
+
+      if(!r){
+        alert("Responda todas as perguntas!");
+        return;
+      }
+
+      let valor = parseInt(r.value);
+
+      soma += valor * p.peso;
+      pesos += p.peso;
+
+      index++;
+    });
+
+    let media = soma / pesos;
+    mediasAreas.push(media);
+
+    resultadoTexto += `${area.nome}: ${media.toFixed(2)} → ${classificar(media)}<br>`;
+  });
+
+  let mediaFinal = mediasAreas.reduce((a,b)=>a+b,0) / mediasAreas.length;
+
+  resultadoTexto += `<br><b>Média geral: ${mediaFinal.toFixed(2)} → ${classificar(mediaFinal)}</b>`;
+
+  document.getElementById("resultado").innerHTML = resultadoTexto;
+}
+
+</script>
+
 </body>
 </html>
